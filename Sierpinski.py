@@ -27,10 +27,10 @@ class Sierpinski:
             self._add_next_point(self._x_array[-1], self._y_array[-1], random.randint(0, 2))
 
     @property
-    def x_array(self):
+    def x_array(self) -> list:
         return self._x_array
 
     @property
-    def y_array(self):
+    def y_array(self) -> list:
         return self._y_array
 
