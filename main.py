@@ -1,9 +1,11 @@
-import tkinter as tk
-from Sierpinski import Sierpinski
 import enum
+import tkinter as tk
+import sys
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+from Sierpinski import Sierpinski
 
 
 class Color(enum.Enum):
@@ -25,37 +27,44 @@ class App:
         self.bg_color = "#FFF"
         self.root['bg'] = self.bg_color
 
-        tk.Label(self.root, text="Accuracy", bg=self.bg_color).pack()
+        self.root.protocol("WM_DELETE_WINDOW", lambda: self._close())
 
         self.canvas = None
         self.figure = None
         self.axes = None
 
-        self.triangle_color = Color.black.value
+        self.triangle_color = Color.blue.value
 
         self.accuracy = 60000
         self.sierpinski = Sierpinski(self.accuracy)
         self.sierpinski.create_arrays()
-
-        self.accuracy_var = tk.IntVar()
-
-        self.accuracy_scale = tk.Scale(self.root, from_=0, to=self.accuracy, resolution=1000, orient=tk.HORIZONTAL,
-                                       length=200, variable=self.accuracy_var, command=lambda _: self._draw_triangle(),
-                                       bg=self.bg_color, bd=0)
-        self.accuracy_scale.pack(pady=5)
-
-        self.settings = tk.Frame(self.root, borderwidth=3, bg=self.bg_color)
-        self.settings.pack()
-
-        self.triangle_color_name = tk.StringVar()
-        self._init_buttons()
-
         self.x_array = self.sierpinski.x_array
         self.y_array = self.sierpinski.y_array
 
+        self.accuracy_scale = None
+        self.accuracy_var = None
+        self.settings = None
+        self.triangle_color_name = None
+
+        self._init_widgets()
         self._draw_triangle()
 
         self.root.mainloop()
+
+    def _init_widgets(self):
+        self.accuracy_var = tk.IntVar()
+        self.accuracy_scale = tk.Scale(self.root, from_=0, to=self.accuracy, resolution=1000, orient=tk.HORIZONTAL,
+                                       length=200, variable=self.accuracy_var, command=lambda _: self._draw_triangle(),
+                                       bg=self.bg_color, bd=0)
+
+        self.settings = tk.Frame(self.root, borderwidth=3, bg=self.bg_color)
+
+        self.triangle_color_name = tk.StringVar()
+        tk.Label(self.root, text="Accuracy", bg=self.bg_color).pack()
+        self.accuracy_scale.pack(pady=5)
+        self.settings.pack()
+
+        self._init_buttons()
 
     def _init_buttons(self):
         color_buttons = []
@@ -101,6 +110,10 @@ class App:
         self.axes.plot(self.x_array[0:accuracy], self.y_array[0:accuracy], self.triangle_color, markersize=0.1)
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.root)
         self.canvas.get_tk_widget().pack()
+
+    def _close(self):
+        self._delete_triangle()
+        sys.exit(0)
 
 
 app = App()
