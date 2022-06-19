@@ -1,6 +1,6 @@
 from cx_Freeze import setup, Executable
 
-ico = 'icon.ico'
+ico = 'Screenshots/icon.ico'
 executables = [Executable('main.py', target_name='sierpinski.exe', icon=ico, base="Win32GUI")]
 
 excludes = ['venv']
